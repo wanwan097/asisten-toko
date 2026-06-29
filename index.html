@@ -1,0 +1,369 @@
+content://com.android.providers.downloads.documents/tree/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fasisten%20kasir%202::raw:/storage/emulated/0/Download/asisten kasir 2/index.html<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nama Toko POS - Sistem Kasir Pintar</title>
+    <!-- Google Fonts untuk font modern & ikon tanpa beban eksternal besar -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans+Icons&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+
+    <!-- 📱 AREA KONTEN UTAMA (Berubah sesuai menu aktif) -->
+    <main id="app-container">
+        
+        
+        <!-- 📊 MENU 1: DASHBOARD & OMZET -->
+        <section id="view-dash" class="menu-view active">
+            <header class="main-header">
+                <div class="user-profile">
+                    <div class="avatar">WP</div>
+                    <div class="user-info">
+                        <h3>Nama Toko</h3>
+                        <p>Owner Dashboard</p>
+                    </div>
+                </div>
+                <button class="btn-notif">🔔<span class="badge"></span></button>
+            </header>
+
+            <div class="scroll-content">
+                <!-- 1. KARTU OMSET -->
+                <div class="card-omset-gradient">
+                    <p class="label-omset">Omset Hari Ini</p>
+                    <h1 id="dash-omset-hari-ini">Rp 0</h1>
+                    <div class="grid-sub-omset">
+                        <div>
+                            <p>Laba Kotor</p>
+                            <strong id="dash-laba-kotor">Rp 0</strong>
+                        </div>
+                        <div>
+                            <p>Transaksi</p>
+                            <strong id="dash-total-transaksi">0 kali</strong>
+                        </div>
+                    </div>
+                    <button onclick="bukaKonfirmasiOmset()" style="width: 100%; margin-top: 15px; background: #fff; color: #27ae60; border: none; padding: 10px; border-radius: 10px; font-weight: bold; font-size: 13px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        📁 Amankan & Catat Omset Hari Ini
+                    </button>
+                </div>
+                
+                    <!-- 2. KARTU GRAFIK TREN (Sekarang Otomatis Dinamis) -->
+                    <div class="mini-chart-placeholder">
+                        <div id="bar-Sen" class="chart-bar" style="height: 0%"><span>Sen</span></div>
+                        <div id="bar-Sel" class="chart-bar" style="height: 0%"><span>Sel</span></div>
+                        <div id="bar-Rab" class="chart-bar" style="height: 0%"><span>Rab</span></div>
+                        <div id="bar-Kam" class="chart-bar" style="height: 0%"><span>Kam</span></div>
+                        <div id="bar-Jum" class="chart-bar" style="height: 0%"><span>Jum</span></div>
+                        <div id="bar-Sab" class="chart-bar" style="height: 0%"><span>Sab</span></div>
+                        <div id="bar-Min" class="chart-bar" style="height: 0%"><span>Min</span></div>
+                    </div>
+
+                <!-- 3. TOMBOL FITUR LAPORAN & STOK -->
+                <div class="grid-menu-fitur">
+                    <div class="btn-fitur-item" onclick="pindahMenu('transaksi')">
+                        <div class="icon-wrap color-blue">📊</div>
+                        <span>Laporan Sales</span>
+                    </div>
+                    <div class="btn-fitur-item" onclick="pindahMenu('produk')">
+                        <div class="icon-wrap color-green">📋</div>
+                        <span>Stok Opname</span>
+                    </div>
+                </div>
+                
+                <!-- 4. KOTAK RIWAYAT TUTUP BUKU (Dipindah ke dalam sini agar urut dan rapi) -->
+                <div class="card-info">
+                    <h4 style="margin-bottom: 10px; color: #2c3e50;">🗃️ Riwayat Tutup Buku (Omset Tercatat)</h4>
+                    <div id="list-omset-tercatat" style="display: flex; flex-direction: column; gap: 10px; max-height: 185px; overflow-y: auto; padding-right: 4px;">
+                        <p id="teks-omset-kosong" style="text-align: center; color: #aaa; font-size: 12px; padding: 10px 0; margin: 0;">Belum ada omset yang dibukukan.</p>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- 📦 MENU 2: MANAJEMEN PRODUK & STOK -->
+        <section id="view-produk" class="menu-view">
+            <div class="view-header">
+                <h2>Manajemen Produk</h2>
+                <button class="btn-tambah" onclick="bukaModalProduk()">➕ Tambah</button>
+            </div>
+            <div class="search-box-wrap">
+                <input type="text" id="cari-produk" placeholder="Cari nama produk atau kode..." oninput="filterProduk(this.value)">
+            </div>
+            <div class="scroll-content">
+                <div id="list-produk-stok" class="grid-produk-stok">
+                    <!-- Dinamis terisi dari JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 🛒 MENU 3: SCAN KASIR (TRANSAKSI UTAMA) -->
+        <section id="view-scan" class="menu-view">
+            <div class="view-header">
+                <h2>Kasir / Penjualan</h2>
+                <span class="item-count-badge" id="keranjang-count">0 Item</span>
+            </div>
+            
+            <div class="card-info" style="padding: 10px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-weight: bold; font-size: 13px;">📷 Scan Barcode Produk</span>
+                    <button id="btn-toggle-kamera" onclick="toggleKameraScanner()" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">Buka Kamera</button>
+                </div>
+                <div id="reader-kamera" style="width: 100%; border-radius: 12px; overflow: hidden; background: #000; display: none;"></div>
+            </div>
+
+            <div class="kasir-layout">
+                <div class="produk-kasir-container">
+                    <div id="list-produk-kasir" class="grid-produk-kasir"></div>
+                </div>
+
+                <div class="invoice-sticky-bottom">
+                    <div class="total-row">
+                        <span>Total Belanja:</span>
+                        <h2 id="kasir-total-harga">Rp 0</h2>
+                    </div>
+                    <button class="btn-eksekusi-bayar" onclick="bukaModalMetodeBayar()">💳 Lanjut ke Pembayaran</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 📑 MENU 4: RIWAYAT TRANSAKSI -->
+        <section id="view-transaksi" class="menu-view">
+            <div class="view-header">
+                <h2>Riwayat Transaksi</h2>
+            </div>
+            <div class="scroll-content">
+                <div id="daftar-riwayat-nota" class="list-nota-wrap">
+                    <!-- Dinamis terisi riwayat nota penjualan -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ⚙️ MENU 5: PENGATURAN -->
+        <section id="view-pengaturan" class="menu-view">
+            <div class="view-header">
+                <h2>Pengaturan Aplikasi</h2>
+            </div>
+            <div class="scroll-content">
+                <div class="card-info">
+                    <h4>Profil Toko</h4>
+                    <div class="input-grup-modern">
+                        <label>Nama Toko</label>
+                        <input type="text" id="cfg-nama-toko" value="Nama Toko">
+                    </div>
+                </div>
+                <div class="card-info" style="margin-top: 15px;">
+                    <h4>Database</h4>
+                    <button class="btn-danger-outline" onclick="resetSemuaData()">⚠️ Reset Semua Data Aplikasi</button>
+                </div>
+            </div>
+            
+                    <!-- AREA AUTH GOOGLE (Taruh di bagian paling atas/Header Aplikasi) -->
+<div id="auth-container" style="background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
+    <div id="user-info" style="display: flex; align-items: center; gap: 10px;">
+        <!-- Status awal saat belum login -->
+        <span style="font-size: 13px; color: #94a3b8;">Anda belum masuk akun</span>
+    </div>
+    <div>
+        <button id="btn-login" onclick="loginGoogle()" style="background: #4285F4; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12.24 10.285V13.4h6.887C18.2 15.614 15.645 18 12.24 18c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.7 0 3.24.61 4.44 1.636l2.455-2.455C17.22 1.407 14.893 0 12.24 0 6.033 0 1 5.033 1 11.24s5.033 11.24 11.24 11.24c6.478 0 11.753-4.664 11.753-11.24 0-.76-.08-1.5-.233-2.195H12.24z"/></svg>
+            Login dengan Google
+        </button>
+        <button id="btn-logout" onclick="logoutGoogle()" style="background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; display: none;">
+            Keluar
+        </button>
+    </div>
+</div>
+
+            
+        </section>
+
+    </main>
+
+    <!-- 🗺️ BOTTOM NAVIGATION BAR -->
+    <nav class="bottom-nav">
+        <button id="nav-dash" class="nav-item active" onclick="pindahMenu('dash')">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Dash</span>
+        </button>
+        <button id="nav-produk" class="nav-item" onclick="pindahMenu('produk')">
+            <span class="nav-icon">📦</span>
+            <span class="nav-label">Produk</span>
+        </button>
+        
+        <div class="nav-item-center-wrap">
+            <button id="nav-scan" class="nav-item-center" onclick="pindahMenu('scan')">
+                <span class="nav-icon-center">🛒</span>
+            </button>
+            <span class="nav-label-center">Kasir</span>
+        </div>
+
+        <button id="nav-transaksi" class="nav-item" onclick="pindahMenu('transaksi')">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Transaksi</span>
+        </button>
+        <button id="nav-pengaturan" class="nav-item" onclick="pindahMenu('pengaturan')">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Pengaturan</span>
+        </button>
+    </nav>
+
+    <!-- 🔮 MODAL POP-UP PEMBAYARAN -->
+    <div id="modal-pembayaran" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3>Pilih Metode Pembayaran</h3>
+            
+            <div class="total-tagihan-box">
+                <p>Total Tagihan</p>
+                <h2 id="modal-tagihan-nominal">Rp 0</h2>
+            </div>
+            
+            <div class="grid-metode-pilihan">
+                <button onclick="setMetodeBayar('TUNAI')">💵 Tunai (Cash)</button>
+                <button onclick="setMetodeBayar('QRIS')">📱 QRIS Digital</button>
+            </div>
+            
+            <!-- DETAIL TUNAI -->
+            <div id="form-tunai-detail">
+                <div class="input-grup-modern" style="margin-top: 10px;">
+                    <label>Uang Tunai Diterima</label>
+                    <input type="text" id="input-nominal-tunai" class="input-tunai-modern" placeholder="Masukkan uang tunai..." oninput="formatUangOtomatis(this)">
+                </div>
+                <div class="kembalian-box-wrap">
+                    <span>Uang Kembalian:</span>
+                    <strong id="text-kembalian-tunai">Rp 0</strong>
+                </div>
+            </div>
+
+            <!-- DETAIL QRIS -->
+            <div id="form-qris-detail" style="display: none; text-align: center; padding: 10px 0; width: 100%;">
+                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 16px; display: block; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.04); margin-bottom: 12px;">
+                    <div style="font-weight: 800; font-size: 15px; color: #1e293b; margin-bottom: 12px; letter-spacing: 1px;">Nama Toko</div>
+                    <img src="qris.jpg" alt="QRIS Toko" style="width: 220px; height: 220px; display: block; margin: 0 auto; object-fit: contain;">
+                </div>
+                
+                <div style="margin-top: 12px; background: #f1f5f9; padding: 14px; border-radius: 16px; width: 100%;">
+                    <p style="font-size: 12px; font-weight: bold; color: #e74c3c; margin-bottom: 8px;">📸 Arahkan Bukti Transfer Pelanggan ke Kamera:</p>
+                    <div id="reader-qris-bukti"></div>
+                    <p id="status-scan-qris" style="font-size: 12px; color: #64748b; margin-top: 8px;">Menunggu deteksi bukti pembayaran...</p>
+                </div>
+            </div>
+
+            <p style="text-align: center; font-size: 11px; color: #64748b; margin: 12px 0 12px 0;">Scan QRIS di atas untuk melunasi transaksi</p>
+
+            <div class="modal-actions" style="margin-top: auto;">
+                <button class="btn-batal" onclick="tutupModalBayar()">Batal</button>
+                <button class="btn-selesai" onclick="simpanTransaksiFinis()">Selesaikan Transaksi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH PRODUK -->
+    <div id="modal-produk" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3>Tambah / Edit Produk</h3>
+            <div class="input-grup-modern">
+                <label>Kode Barcode / SKU</label>
+                <input type="text" id="prod-barcode" placeholder="Scan atau ketik kode barcode (misal: 8992...)">
+                
+                <label>Nama Produk</label>
+                <input type="text" id="prod-nama" placeholder="Misal: Speaker Ashley 15 Inch">
+            </div>
+            <div class="input-grup-modern">
+                <label>Harga Jual (Rp)</label>
+                <input type="number" id="prod-harga" placeholder="0">
+            </div>
+            <div class="input-grup-modern">
+                <label>Harga Modal (Untuk hitung Laba Kotor)</label>
+                <input type="number" id="prod-modal" placeholder="0">
+            </div>
+            <div class="input-grup-modern">
+                <label>Stok Awal</label>
+                <input type="number" id="prod-stok" value="10">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-batal" onclick="tutupModalProduk()">Batal</button>
+                <button class="btn-selesai" onclick="simpanProdukBaru()">Simpan Produk</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Script Utama -->
+<script src="script.js"></script>
+<!-- Script Khusus Autentikasi Google Firebase -->
+<script type="module" src="auth.js"></script>
+
+    
+<!-- 🚨 MODAL KONFIRMASI CUSTOM (MODERN & ELEGAN) -->
+<div id="modal-konfirmasi-omset" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 2000; padding: 20px;">
+    <div style="background: #ffffff; width: 100%; max-width: 340px; padding: 24px; border-radius: 16px; text-align: center; color: #1a202c; animation: scaleUp 0.2s ease-out;">
+        <div style="font-size: 40px; margin-bottom: 12px;">📁</div>
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #1e293b;">Amankan Omset Hari Ini?</h3>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.5;">Data omset hari ini akan dibukukan ke riwayat dan angka dashboard akan di-reset kembali ke Rp 0.</p>
+        
+        <div style="background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+            <span style="font-size: 11px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold;">Nominal Omset</span>
+            <strong id="konfirmasi-nominal-teks" style="font-size: 18px; color: #27ae60;">Rp 0</strong>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button onclick="tutupModalKonfirmasi()" style="flex: 1; padding: 12px; background: #e2e8f0; color: #4a5568; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px;">Batal</button>
+            <button onclick="eksekusiSimpanOmset()" style="flex: 1; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px;">Ya, Amankan</button>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+</style>
+
+    
+    <!-- TEMPEL DI INDEX.HTML PALING BAWAH (SEBELUM </body>) -->
+<div id="modal-konfirmasi-omset" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 20000; padding: 20px;">
+    <div style="background: #ffffff; width: 100%; max-width: 340px; padding: 24px; border-radius: 16px; text-align: center; color: #1a202c;">
+        <div style="font-size: 40px; margin-bottom: 12px;">📁</div>
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #1e293b;">Amankan Omset Hari Ini?</h3>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.5;">Data omset hari ini akan dibukukan ke riwayat harian dan dashboard atas otomatis dibersihkan.</p>
+        
+        <div style="background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+            <span style="font-size: 11px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold;">Nominal Rekap</span>
+            <strong id="konfirmasi-nominal-teks" style="font-size: 18px; color: #27ae60;">Rp 0</strong>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button onclick="tutupModalKonfirmasi()" style="flex: 1; padding: 12px; background: #e2e8f0; color: #4a5568; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px;">Batal</button>
+            <button onclick="eksekusiSimpanOmset()" style="flex: 1; padding: 12px; background: #2ecc71; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px;">Ya, Catat!</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAcvaZATpsbSNtBAuKxuCsvpfLjODc7Cko",
+    authDomain: "asisten-toko.firebaseapp.com",
+    projectId: "asisten-toko",
+    storageBucket: "asisten-toko.firebasestorage.app",
+    messagingSenderId: "493614445360",
+    appId: "1:493614445360:web:2f235b72bdace6578c8ef5",
+    measurementId: "G-1923M0HH2W"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+    
+</body>
+</html>
